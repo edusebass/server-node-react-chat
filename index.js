@@ -1,25 +1,40 @@
 const express = require("express");
 const cors = require("cors");
-const { default: axios } = require("axios");
+const axios = require("axios");
 
 const app = express();
 app.use(express.json());
-app.use(cors({ origin: true }));
+app.use(cors()); // Habilita CORS para todos los dominios, puedes personalizar según tus necesidades
+
+app.get("/", (req, res) => {
+    res.send("<h1>Servidor corriendo</h1>");
+});
 
 app.post("/authenticate", async (req, res) => {
     const { username } = req.body;
 
     try {
-        const r = await axios.put(
+        const response = await axios.put(
             'https://api.chatengine.io/users/',
-            {username: username, secret: username, first_name: username },
-            {headers: {"private-key": "7a0769f5-e05a-4713-a6d9-4dde0329efdd"}}
-        )
-        return res.status(r.status).json(r.data);
-    } catch (e) {
-        return res.status(e.response.status).json(e.response.data);
+            {
+                username: username,
+                secret: username,
+                first_name: username
+            },
+            {
+                headers: {
+                    "private-key": "7a0769f5-e05a-4713-a6d9-4dde0329efdd"
+                }
+            }
+        );
+        return res.status(response.status).json(response.data);
+    } catch (error) {
+        console.error("Error en la solicitud a la API externa:", error);
+        return res.status(500).json({ error: "Error interno del servidor" });
     }
-    return res.json({ username: username, secret: "sha256..." });
 });
 
-app.listen(3000);
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Servidor Express escuchando en el puerto ${PORT}`);
+});
