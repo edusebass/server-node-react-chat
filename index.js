@@ -1,10 +1,10 @@
-const express = require("express");
-const cors = require("cors");
-const axios = require("axios");
+import express from "express";
+import cors from "cors";
+import axios from "axios";
 
 const app = express();
 app.use(express.json());
-app.use(cors()); // Habilita CORS para todos los dominios, puedes personalizar según tus necesidades
+app.use(cors());
 
 app.get("/", (req, res) => {
     res.send("<h1>Servidor corriendo</h1>");
