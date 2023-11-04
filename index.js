@@ -4,7 +4,20 @@ import axios from "axios";
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+
+// Habilitar CORS solo para el dominio de producción en Railway
+const allowedOrigins = ["https://nodejs-reactjs-chat-production.up.railway.app/"]; // Reemplaza con el dominio de tu frontend en Railway
+app.use(cors({
+    origin: function(origin, callback) {
+        if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+            callback(null, true);
+        } else {
+            callback(new Error("Acceso no permitido por CORS"));
+        }
+    },
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    credentials: true
+}));
 
 app.get("/", (req, res) => {
     res.send("<h1>Servidor corriendo</h1>");
@@ -23,7 +36,7 @@ app.post("/authenticate", async (req, res) => {
             },
             {
                 headers: {
-                    "private-key": "7a0769f5-e05a-4713-a6d9-4dde0329efdd"
+                    "private-key": process.env.CHAT_ENGINE_PRIVATE_KEY // Usar variable de entorno para la clave privada
                 }
             }
         );
